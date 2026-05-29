@@ -1,0 +1,225 @@
+# Приложение 1
+
+## Базовая динамика системы
+
+```julia
+using DifferentialEquations
+using Plots
+
+# Задание параметров модели
+b1 = 1.0
+b2 = 0.0
+b3 = 0.0
+eta1 = 10.0
+eta2 = 11.0
+d1 = 1.0
+d2 = 1.0
+mu1 = 1.0
+mu2 = 2.0
+
+## Начальные условия
+u0 = [0.36, 0.45, 0.19]
+tspan = (0.0, 200.0)
+
+# Определение функции, задающей правые части системы
+function full_model!(du, u, p, t)
+    x, y, z = u
+    
+    du[1] = x*(1 - x) - x*y/(1 + b1*x) - x*z/(1 + b1*x)
+    du[2] = eta1*x*y/(1 + b1*x) - d1*y*z/(1 + b2*y + b3*z) - mu1*y
+    du[3] = eta2*x*z/(1 + b1*x) + d2*y*z/(1 + b2*y + b3*z) - mu2*z
+end
+
+# Создание задачи и решение
+prob = ODEProblem(full_model!, u0, tspan)
+sol = solve(prob, Rodas5(), reltol=1e-8, abstol=1e-8)
+
+# Построение графика динамики популяций
+plot(sol,
+     xlabel="Время t",
+     ylabel="Численность популяции",
+     label=["x (жертва)" "y (хищник)" "z (суперхищник)"],
+     title="Динамика популяций во времени",
+     linewidth=2)
+```
+## Фазовые портреты системы
+
+```julia
+# Фазовый портрет (y, z) - взаимодействие хищников и суперхищников
+plot([u[2] for u in sol.u],
+     [u[3] for u in sol.u],
+     xlabel="Численность хищников y",
+     ylabel="Численность суперхищников z",
+     title="Фазовый портрет (y, z)",
+     linewidth=2,
+     legend=false)
+```
+
+```julia
+# Фазовый портрет (x, y) - взаимодействие жертв и хищников
+plot([u[1] for u in sol.u],
+     [u[2] for u in sol.u],
+     xlabel="Численность жертв x",
+     ylabel="Численность хищников y",
+     title="Фазовый портрет (x, y)",
+     linewidth=2,
+     legend=false)
+```
+
+```julia
+# Фазовый портрет (x, z) - взаимодействие жертв и суперхищников
+plot([u[1] for u in sol.u],
+     [u[3] for u in sol.u],
+     xlabel="Численность жертв x",
+     ylabel="Численность суперхищников z",
+     title="Фазовый портрет (x, z)",
+     linewidth=2,
+     legend=false)
+```
+
+```julia
+# Трёхмерный фазовый портрет
+plot([u[1] for u in sol.u],
+     [u[2] for u in sol.u],
+     [u[3] for u in sol.u],
+     xlabel="x (жертва)",
+     ylabel="y (хищник)",
+     zlabel="z (суперхищник)",
+     title="Трёхмерный фазовый портрет",
+     linewidth=2,
+     legend=false)
+```
+## Влияние насыщения хищников
+
+```julia
+using DifferentialEquations
+using Plots
+
+function model!(du, u, p, t)
+    x, y, z = u
+    b1, eta1, eta2, d1, d2, mu1, mu2 = p
+    
+    du[1] = x*(1 - x) - x*y/(1 + b1*x) - x*z/(1 + b1*x)
+    du[2] = eta1*x*y/(1 + b1*x) - d1*y*z - mu1*y
+    du[3] = eta2*x*z/(1 + b1*x) + d2*y*z - mu2*z
+end
+
+u0 = [0.36, 0.45, 0.19]
+tspan = (0.0, 200.0)
+
+# Базовые параметры
+eta1, eta2, d1, d2, mu1, mu2 = 10.0, 11.0, 1.0, 1.0, 1.0, 2.0
+
+# Разные значения насыщения
+b1_values = [0.5, 1.0, 2.0, 5.0]
+
+# Создаём график
+plt = plot(title="Влияние насыщения хищников (b₁) на динамику жертв",
+           xlabel="Время t", 
+           ylabel="Численность жертв x(t)",
+           legend=:topright,
+           size=(800, 500))
+
+for b1 in b1_values
+    p = [b1, eta1, eta2, d1, d2, mu1, mu2]
+    prob = ODEProblem(model!, u0, tspan, p)
+    sol = solve(prob, Rodas5(), reltol=1e-8, abstol=1e-8)
+    plot!(plt, sol, idxs=1, label="b₁ = b₁", linewidth=2)
+end
+
+display(plt)
+```
+## Сравнение различных наборов параметров
+
+```julia
+using DifferentialEquations
+using Plots
+
+function model!(du, u, p, t)
+    x, y, z = u
+    b1, eta1, eta2, d1, d2, mu1, mu2 = p
+    
+    du[1] = x*(1 - x) - x*y/(1 + b1*x) - x*z/(1 + b1*x)
+    du[2] = eta1*x*y/(1 + b1*x) - d1*y*z - mu1*y
+    du[3] = eta2*x*z/(1 + b1*x) + d2*y*z - mu2*z
+end
+
+u0 = [0.36, 0.45, 0.19]
+tspan = (0.0, 200.0)
+
+# Четыре набора параметров
+p1 = [1.0, 10.0, 11.0, 1.0, 1.0, 1.0, 2.0]  # базовый
+p2 = [1.0, 10.0, 11.0, 1.0, 1.0, 1.0, 3.0]  # увеличенная смертность суперхищников
+p3 = [1.0, 15.0, 11.0, 1.0, 1.0, 1.0, 2.0]  # увеличенная эффективность хищников
+p4 = [0.5, 10.0, 11.0, 1.0, 1.0, 1.0, 2.0]  # уменьшенное насыщение
+
+params = [p1, p2, p3, p4]
+titles = ["Базовый", "mu2 = 3.0", "eta2 = 15.0", "b1 = 0.5"]
+
+# Создаём график 2x2
+plt = plot(layout=(2, 2), size=(1000, 800), legend=:topright)
+
+for (i, (p, title)) in enumerate(zip(params, titles))
+    prob = ODEProblem(model!, u0, tspan, p)
+    sol = solve(prob, Rodas5(), reltol=1e-8, abstol=1e-8)
+    
+    plot!(plt[i], sol, 
+          xlabel="Время t", 
+          ylabel="Численность",
+          label=["x" "y" "z"],
+          title=title,
+          linewidth=2)
+end
+
+display(plt)
+```
+
+
+## Построение графиков для фазовых портретов при различных параметрах
+
+```julia
+using DifferentialEquations
+using Plots
+
+function model!(du, u, p, t)
+    x, y, z = u
+    b1, eta1, eta2, d1, d2, mu1, mu2 = p
+    
+    du[1] = x*(1 - x) - x*y/(1 + b1*x) - x*z/(1 + b1*x)
+    du[2] = eta1*x*y/(1 + b1*x) - d1*y*z - mu1*y
+    du[3] = eta2*x*z/(1 + b1*x) + d2*y*z - mu2*z
+end
+
+u0 = [0.36, 0.45, 0.19]
+tspan = (0.0, 200.0)
+
+# Разные параметры
+p1 = [1.0, 10.0, 11.0, 1.0, 1.0, 1.0, 2.0]          # базовый
+p2 = [1.0, 10.0, 11.0, 1.0, 1.0, 0.5, 2.0]          # меньшая смертность хищников
+p3 = [1.0, 10.0, 11.0, 1.0, 1.0, 2.0, 2.0]          # большая смертность хищников
+p4 = [2.0, 10.0, 11.0, 1.0, 1.0, 1.0, 2.0]          # большее насыщение
+
+params = [p1, p2, p3, p4]
+titles = ["Базовый", "mu1 = 0.5", "mu2 = 2.0", "b1 = 2.0"]
+
+# Создаём график 2x2 для фазовых портретов (x, y)
+plt = plot(layout=(2, 2), size=(1000, 800), legend=:topright)
+
+for (i, (p, title)) in enumerate(zip(params, titles))
+    prob = ODEProblem(model!, u0, tspan, p)
+    sol = solve(prob, Rodas5(), reltol=1e-8, abstol=1e-8)
+    
+    x_vals = [u[1] for u in sol.u]
+    y_vals = [u[2] for u in sol.u]
+    
+    plot!(plt[i], x_vals, y_vals,
+          xlabel="x (жертва)", 
+          ylabel="y (хищник)",
+          title=title,
+          linewidth=2,
+          legend=false)
+end
+
+display(plt)
+```
+

@@ -1,0 +1,19 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c}{\PYGZsh{} Влияние смертности суперхищника (mu2)}
+\PYG{n}{mu2\PYGZus{}values}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{[}\PYG{l+m+mf}{0.5}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{2.0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{4.0}\PYG{p}{]}
+
+\PYG{n}{plt2}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{plot}\PYG{p}{(}\PYG{n}{title}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Влияние смертности суперхищника (mu2) на динамику жертв\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Время t\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Численность жертв x(t)\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{            }\PYG{n}{size}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{800}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{500}\PYG{p}{),}
+\PYG{+w}{            }\PYG{n}{legend}\PYG{o}{=}\PYG{l+s+ss}{:topright}\PYG{p}{)}
+
+\PYG{k}{for}\PYG{+w}{ }\PYG{n}{mu2}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{mu2\PYGZus{}values}
+\PYG{+w}{    }\PYG{n}{p}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{[}\PYG{n}{b1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{eta1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{eta2}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{d1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{d2}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{mu1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{mu2}\PYG{p}{]}
+\PYG{+w}{    }\PYG{n}{prob}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ODEProblem}\PYG{p}{(}\PYG{n}{model\PYGZus{}with\PYGZus{}z!}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{u0\PYGZus{}with}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tspan}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{)}
+\PYG{+w}{    }\PYG{n}{sol}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{solve}\PYG{p}{(}\PYG{n}{prob}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Rodas5}\PYG{p}{(),}\PYG{+w}{ }\PYG{n}{reltol}\PYG{o}{=}\PYG{l+m+mf}{1e\PYGZhy{}8}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{abstol}\PYG{o}{=}\PYG{l+m+mf}{1e\PYGZhy{}8}\PYG{p}{)}
+\PYG{+w}{    }\PYG{n}{plot!}\PYG{p}{(}\PYG{n}{plt2}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{sol}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{idxs}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{label}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}mu2 = mu2\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{linewidth}\PYG{o}{=}\PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{k}{end}
+
+\PYG{n}{display}\PYG{p}{(}\PYG{n}{plt2}\PYG{p}{)}
+\end{MintedVerbatim}

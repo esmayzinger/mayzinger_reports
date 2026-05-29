@@ -1,0 +1,10 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c}{\PYGZsh{} Фазовый портрет (x, z) \PYGZhy{} взаимодействие жертв и суперхищников}
+\PYG{n}{plot}\PYG{p}{([}\PYG{n}{u}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{u}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{sol}\PYG{o}{.}\PYG{n}{u}\PYG{p}{],}
+\PYG{+w}{     }\PYG{p}{[}\PYG{n}{u}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{+w}{ }\PYG{k}{for}\PYG{+w}{ }\PYG{n}{u}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{n}{sol}\PYG{o}{.}\PYG{n}{u}\PYG{p}{],}
+\PYG{+w}{     }\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Численность жертв x\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{     }\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Численность суперхищников z\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{     }\PYG{n}{title}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Фазовый портрет (x, z)\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{     }\PYG{n}{linewidth}\PYG{o}{=}\PYG{l+m+mi}{2}\PYG{p}{,}
+\PYG{+w}{     }\PYG{n}{legend}\PYG{o}{=}\PYG{n+nb}{false}\PYG{p}{)}
+\end{MintedVerbatim}

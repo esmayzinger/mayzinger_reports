@@ -1,0 +1,209 @@
+# Приложение 2
+
+## Сравнение систем с суперхищником и без него
+
+```julia
+using DifferentialEquations
+using Plots
+
+function model_with_z!(du, u, p, t)
+    x, y, z = u
+    b1, eta1, eta2, d1, d2, mu1, mu2 = p
+    
+    du[1] = x*(1 - x) - x*y/(1 + b1*x) - x*z/(1 + b1*x)
+    du[2] = eta1*x*y/(1 + b1*x) - d1*y*z - mu1*y
+    du[3] = eta2*x*z/(1 + b1*x) + d2*y*z - mu2*z
+end
+
+function model_without_z!(du, u, p, t)
+    x, y = u
+    b1, eta1, mu1 = p
+    
+    du[1] = x*(1 - x) - x*y/(1 + b1*x)
+    du[2] = eta1*x*y/(1 + b1*x) - mu1*y
+end
+
+# Параметры
+b1, eta1, eta2, d1, d2, mu1, mu2 = 1.0, 10.0, 11.0, 1.0, 1.0, 1.0, 2.0
+u0_with = [0.36, 0.45, 0.19]
+u0_without = [0.36, 0.45]
+tspan = (0.0, 200.0)
+
+# Решения
+prob_with = ODEProblem(model_with_z!, u0_with, tspan, [b1, eta1, eta2, d1, d2, mu1, mu2])
+prob_without = ODEProblem(model_without_z!, u0_without, tspan, [b1, eta1, mu1])
+
+sol_with = solve(prob_with, Rodas5(), reltol=1e-8, abstol=1e-8)
+sol_without = solve(prob_without, Rodas5(), reltol=1e-8, abstol=1e-8)
+
+# График сравнения
+plt1 = plot(title="Влияние суперхищника на динамику жертв",
+            xlabel="Время t",
+            ylabel="Численность жертв x(t)",
+            size=(800, 500))
+
+plot!(plt1, sol_with, idxs=1, label="С суперхищником", linewidth=2)
+plot!(plt1, sol_without, idxs=1, label="Без суперхищника", linewidth=2, linestyle=:dash)
+
+display(plt1)
+```
+
+## Влияние смертности суперхищника
+
+```julia
+# Влияние смертности суперхищника (mu2)
+mu2_values = [0.5, 1.0, 2.0, 4.0]
+
+plt2 = plot(title="Влияние смертности суперхищника (mu2) на динамику жертв",
+            xlabel="Время t",
+            ylabel="Численность жертв x(t)",
+            size=(800, 500),
+            legend=:topright)
+
+for mu2 in mu2_values
+    p = [b1, eta1, eta2, d1, d2, mu1, mu2]
+    prob = ODEProblem(model_with_z!, u0_with, tspan, p)
+    sol = solve(prob, Rodas5(), reltol=1e-8, abstol=1e-8)
+    plot!(plt2, sol, idxs=1, label="mu2 = mu2", linewidth=2)
+end
+
+display(plt2)
+```
+
+## Влияние давления суперхищника на хищников
+
+```julia
+# Влияние интенсивности охоты суперхищника на хищников (d₁)
+d1_values = [0.0, 0.5, 1.0, 2.0, 3.0]
+
+plt3 = plot(title="Влияние давления суперхищника на хищников (d₁)",
+            xlabel="Время t",
+            ylabel="Численность хищников y(t)",
+            size=(800, 500),
+            legend=:topright)
+
+for d1 in d1_values
+    p = [b1, eta1, eta2, d1, d2, mu1, 2.0]
+    prob = ODEProblem(model_with_z!, u0_with, tspan, p)
+    sol = solve(prob, Rodas5(), reltol=1e-8, abstol=1e-8)
+    plot!(plt3, sol, idxs=2, label="d₁ = d₁", linewidth=2)
+end
+
+display(plt3)
+```
+
+## Фазовые портреты при разном давлении суперхищника
+
+```julia
+# Фазовые портреты при разных уровнях давления суперхищника
+plt4 = plot(layout=(2, 2), size=(1000, 800), title="Фазовые портреты при разных d₁")
+
+d1_vals = [0.0, 0.5, 1.0, 2.0]
+for (i, d1) in enumerate(d1_vals)
+    p = [b1, eta1, eta2, d1, d2, mu1, 2.0]
+    prob = ODEProblem(model_with_z!, u0_with, tspan, p)
+    sol = solve(prob, Rodas5(), reltol=1e-8, abstol=1e-8)
+    
+    x_vals = [u[1] for u in sol.u]
+    y_vals = [u[2] for u in sol.u]
+    
+    plot!(plt4[i], x_vals, y_vals,
+          xlabel="x (жертва)", 
+          ylabel="y (хищник)",
+          title="d₁ = d₁",
+          linewidth=2,
+          legend=false)
+end
+
+display(plt4)
+```
+## Стохастическая имитационная модель
+
+```julia
+using DifferentialEquations
+using Plots
+using Random
+
+# Параметры стохастической модели
+N = 10000  # эффективный размер популяции
+
+# Начальные условия
+x = 0.36
+y = 0.45
+z = 0.19
+
+# Параметры интегрирования
+dt = 0.01
+tmax = 200
+nsteps = Int(tmax / dt)
+
+# Массивы для хранения результатов
+time = zeros(nsteps)
+X = zeros(nsteps)
+Y = zeros(nsteps)
+Z = zeros(nsteps)
+
+# Инициализация
+X[1] = x
+Y[1] = y
+Z[1] = z
+
+# Основной цикл интегрирования (метод Эйлера-Маруямы)
+for i in 1:nsteps-1
+    t = i * dt
+    time[i+1] = t
+    
+    # Вычисление детерминированных приращений
+    dx = x*(1 - x) - x*y/(1 + b1*x) - x*z/(1 + b1*x)
+    dy = eta1*x*y/(1 + b1*x) - d1*y*z/(1 + b2*y + b3*z) - mu1*y
+    dz = eta2*x*z/(1 + b1*x) + d2*y*z/(1 + b2*y + b3*z) - mu2*z
+    
+    # Обновление с добавлением шума (стохастическая составляющая)
+    x += dx*dt + sqrt(abs(dx)/N) * randn()
+    y += dy*dt + sqrt(abs(dy)/N) * randn()
+    z += dz*dt + sqrt(abs(dz)/N) * randn()
+    
+    # Сохранение результатов
+    X[i+1] = x
+    Y[i+1] = y
+    Z[i+1] = z
+end
+
+# Построение графика стохастической динамики
+plt_stoch = plot(time, [X Y Z],
+                 xlabel="Время t",
+                 ylabel="Численность популяции",
+                 label=["x (жертва)" "y (хищник)" "z (суперхищник)"],
+                 title="Стохастическая динамика популяций (N = 10000)",
+                 linewidth=1.5)
+
+display(plt_stoch)
+```
+## Сравнение детерминированной и стохастической моделей
+
+```julia
+# Детерминированная модель (для сравнения)
+function det_model!(du, u, p, t)
+    x, y, z = u
+    b1, eta1, eta2, d1, d2, mu1, mu2 = p
+    
+    du[1] = x*(1 - x) - x*y/(1 + b1*x) - x*z/(1 + b1*x)
+    du[2] = eta1*x*y/(1 + b1*x) - d1*y*z - mu1*y
+    du[3] = eta2*x*z/(1 + b1*x) + d2*y*z - mu2*z
+end
+
+p_det = [b1, eta1, eta2, d1, d2, mu1, mu2]
+prob_det = ODEProblem(det_model!, u0, tspan, p_det)
+sol_det = solve(prob_det, Rodas5(), reltol=1e-8, abstol=1e-8)
+
+# График сравнения
+plt_compare = plot(title="Сравнение детерминированной и стохастической моделей",
+                   xlabel="Время t", 
+                   ylabel="Численность жертв x(t)",
+                   size=(800, 500))
+
+plot!(plt_compare, sol_det, idxs=1, label="Детерминированная", linewidth=2, linestyle=:solid)
+plot!(plt_compare, time, X, label="Стохастическая (N=10000)", linewidth=1.5, linestyle=:dash, alpha=0.8)
+
+display(plt_compare)
+```

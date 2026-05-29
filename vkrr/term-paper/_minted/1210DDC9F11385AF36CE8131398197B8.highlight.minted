@@ -1,0 +1,40 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{using}\PYG{+w}{ }\PYG{n}{DifferentialEquations}
+\PYG{k}{using}\PYG{+w}{ }\PYG{n}{Plots}
+
+\PYG{c}{\PYGZsh{} Задание параметров модели}
+\PYG{n}{b1}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{1.0}
+\PYG{n}{b2}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.0}
+\PYG{n}{b3}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.0}
+\PYG{n}{eta1}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{10.0}
+\PYG{n}{eta2}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{11.0}
+\PYG{n}{d1}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{1.0}
+\PYG{n}{d2}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{1.0}
+\PYG{n}{mu1}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{1.0}
+\PYG{n}{mu2}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{2.0}
+
+\PYG{c}{\PYGZsh{}\PYGZsh{} Начальные условия}
+\PYG{n}{u0}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{[}\PYG{l+m+mf}{0.36}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.45}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.19}\PYG{p}{]}
+\PYG{n}{tspan}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{l+m+mf}{0.0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{200.0}\PYG{p}{)}
+
+\PYG{c}{\PYGZsh{} Определение функции, задающей правые части системы}
+\PYG{k}{function}\PYG{+w}{ }\PYG{n}{full\PYGZus{}model!}\PYG{p}{(}\PYG{n}{du}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{u}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{)}
+\PYG{+w}{    }\PYG{n}{x}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{z}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{u}
+
+\PYG{+w}{    }\PYG{n}{du}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{x}\PYG{o}{*}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{x}\PYG{o}{*}\PYG{n}{y}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b1}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{x}\PYG{o}{*}\PYG{n}{z}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b1}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}
+\PYG{+w}{    }\PYG{n}{du}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{eta1}\PYG{o}{*}\PYG{n}{x}\PYG{o}{*}\PYG{n}{y}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b1}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{d1}\PYG{o}{*}\PYG{n}{y}\PYG{o}{*}\PYG{n}{z}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b2}\PYG{o}{*}\PYG{n}{y}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b3}\PYG{o}{*}\PYG{n}{z}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{mu1}\PYG{o}{*}\PYG{n}{y}
+\PYG{+w}{    }\PYG{n}{du}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{eta2}\PYG{o}{*}\PYG{n}{x}\PYG{o}{*}\PYG{n}{z}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b1}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{d2}\PYG{o}{*}\PYG{n}{y}\PYG{o}{*}\PYG{n}{z}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b2}\PYG{o}{*}\PYG{n}{y}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b3}\PYG{o}{*}\PYG{n}{z}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{mu2}\PYG{o}{*}\PYG{n}{z}
+\PYG{k}{end}
+
+\PYG{c}{\PYGZsh{} Создание задачи и решение}
+\PYG{n}{prob}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ODEProblem}\PYG{p}{(}\PYG{n}{full\PYGZus{}model!}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{u0}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tspan}\PYG{p}{)}
+\PYG{n}{sol}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{solve}\PYG{p}{(}\PYG{n}{prob}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Rodas5}\PYG{p}{(),}\PYG{+w}{ }\PYG{n}{reltol}\PYG{o}{=}\PYG{l+m+mf}{1e\PYGZhy{}8}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{abstol}\PYG{o}{=}\PYG{l+m+mf}{1e\PYGZhy{}8}\PYG{p}{)}
+
+\PYG{c}{\PYGZsh{} Построение графика динамики популяций}
+\PYG{n}{plot}\PYG{p}{(}\PYG{n}{sol}\PYG{p}{,}
+\PYG{+w}{     }\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Время t\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{     }\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Численность популяции\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{     }\PYG{n}{label}\PYG{o}{=}\PYG{p}{[}\PYG{l+s}{\PYGZdq{}x (жертва)\PYGZdq{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}y (хищник)\PYGZdq{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}z (суперхищник)\PYGZdq{}}\PYG{p}{],}
+\PYG{+w}{     }\PYG{n}{title}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Динамика популяций во времени\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{     }\PYG{n}{linewidth}\PYG{o}{=}\PYG{l+m+mi}{2}\PYG{p}{)}
+\end{MintedVerbatim}

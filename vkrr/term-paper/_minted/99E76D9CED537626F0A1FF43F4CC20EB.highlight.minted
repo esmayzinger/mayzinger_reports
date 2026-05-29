@@ -1,0 +1,60 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{using}\PYG{+w}{ }\PYG{n}{DifferentialEquations}
+\PYG{k}{using}\PYG{+w}{ }\PYG{n}{Plots}
+\PYG{k}{using}\PYG{+w}{ }\PYG{n}{Random}
+
+\PYG{c}{\PYGZsh{} Параметры стохастической модели}
+\PYG{n}{N}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{10000}\PYG{+w}{  }\PYG{c}{\PYGZsh{} эффективный размер популяции}
+
+\PYG{c}{\PYGZsh{} Начальные условия}
+\PYG{n}{x}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.36}
+\PYG{n}{y}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.45}
+\PYG{n}{z}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.19}
+
+\PYG{c}{\PYGZsh{} Параметры интегрирования}
+\PYG{n}{dt}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.01}
+\PYG{n}{tmax}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{200}
+\PYG{n}{nsteps}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k+kt}{Int}\PYG{p}{(}\PYG{n}{tmax}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{dt}\PYG{p}{)}
+
+\PYG{c}{\PYGZsh{} Массивы для хранения результатов}
+\PYG{n}{time}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{zeros}\PYG{p}{(}\PYG{n}{nsteps}\PYG{p}{)}
+\PYG{n}{X}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{zeros}\PYG{p}{(}\PYG{n}{nsteps}\PYG{p}{)}
+\PYG{n}{Y}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{zeros}\PYG{p}{(}\PYG{n}{nsteps}\PYG{p}{)}
+\PYG{n}{Z}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{zeros}\PYG{p}{(}\PYG{n}{nsteps}\PYG{p}{)}
+
+\PYG{c}{\PYGZsh{} Инициализация}
+\PYG{n}{X}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{x}
+\PYG{n}{Y}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{y}
+\PYG{n}{Z}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{z}
+
+\PYG{c}{\PYGZsh{} Основной цикл интегрирования (метод Эйлера\PYGZhy{}Маруямы)}
+\PYG{k}{for}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{k}{in}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{o}{:}\PYG{n}{nsteps}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}
+\PYG{+w}{    }\PYG{n}{t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{dt}
+\PYG{+w}{    }\PYG{n}{time}\PYG{p}{[}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}
+
+\PYG{+w}{    }\PYG{c}{\PYGZsh{} Вычисление детерминированных приращений}
+\PYG{+w}{    }\PYG{n}{dx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{x}\PYG{o}{*}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{x}\PYG{o}{*}\PYG{n}{y}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b1}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{x}\PYG{o}{*}\PYG{n}{z}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b1}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}
+\PYG{+w}{    }\PYG{n}{dy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{eta1}\PYG{o}{*}\PYG{n}{x}\PYG{o}{*}\PYG{n}{y}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b1}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{d1}\PYG{o}{*}\PYG{n}{y}\PYG{o}{*}\PYG{n}{z}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b2}\PYG{o}{*}\PYG{n}{y}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b3}\PYG{o}{*}\PYG{n}{z}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{mu1}\PYG{o}{*}\PYG{n}{y}
+\PYG{+w}{    }\PYG{n}{dz}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{eta2}\PYG{o}{*}\PYG{n}{x}\PYG{o}{*}\PYG{n}{z}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b1}\PYG{o}{*}\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{d2}\PYG{o}{*}\PYG{n}{y}\PYG{o}{*}\PYG{n}{z}\PYG{o}{/}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b2}\PYG{o}{*}\PYG{n}{y}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{b3}\PYG{o}{*}\PYG{n}{z}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{mu2}\PYG{o}{*}\PYG{n}{z}
+
+\PYG{+w}{    }\PYG{c}{\PYGZsh{} Обновление с добавлением шума (стохастическая составляющая)}
+\PYG{+w}{    }\PYG{n}{x}\PYG{+w}{ }\PYG{o}{+=}\PYG{+w}{ }\PYG{n}{dx}\PYG{o}{*}\PYG{n}{dt}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{abs}\PYG{p}{(}\PYG{n}{dx}\PYG{p}{)}\PYG{o}{/}\PYG{n}{N}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{randn}\PYG{p}{()}
+\PYG{+w}{    }\PYG{n}{y}\PYG{+w}{ }\PYG{o}{+=}\PYG{+w}{ }\PYG{n}{dy}\PYG{o}{*}\PYG{n}{dt}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{abs}\PYG{p}{(}\PYG{n}{dy}\PYG{p}{)}\PYG{o}{/}\PYG{n}{N}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{randn}\PYG{p}{()}
+\PYG{+w}{    }\PYG{n}{z}\PYG{+w}{ }\PYG{o}{+=}\PYG{+w}{ }\PYG{n}{dz}\PYG{o}{*}\PYG{n}{dt}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{abs}\PYG{p}{(}\PYG{n}{dz}\PYG{p}{)}\PYG{o}{/}\PYG{n}{N}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{randn}\PYG{p}{()}
+
+\PYG{+w}{    }\PYG{c}{\PYGZsh{} Сохранение результатов}
+\PYG{+w}{    }\PYG{n}{X}\PYG{p}{[}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{x}
+\PYG{+w}{    }\PYG{n}{Y}\PYG{p}{[}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{y}
+\PYG{+w}{    }\PYG{n}{Z}\PYG{p}{[}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{z}
+\PYG{k}{end}
+
+\PYG{c}{\PYGZsh{} Построение графика стохастической динамики}
+\PYG{n}{plt\PYGZus{}stoch}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{plot}\PYG{p}{(}\PYG{n}{time}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{[}\PYG{n}{X}\PYG{+w}{ }\PYG{n}{Y}\PYG{+w}{ }\PYG{n}{Z}\PYG{p}{],}
+\PYG{+w}{                 }\PYG{n}{xlabel}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Время t\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{                 }\PYG{n}{ylabel}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Численность популяции\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{                 }\PYG{n}{label}\PYG{o}{=}\PYG{p}{[}\PYG{l+s}{\PYGZdq{}x (жертва)\PYGZdq{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}y (хищник)\PYGZdq{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}z (суперхищник)\PYGZdq{}}\PYG{p}{],}
+\PYG{+w}{                 }\PYG{n}{title}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Стохастическая динамика популяций (N = 10000)\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{                 }\PYG{n}{linewidth}\PYG{o}{=}\PYG{l+m+mf}{1.5}\PYG{p}{)}
+
+\PYG{n}{display}\PYG{p}{(}\PYG{n}{plt\PYGZus{}stoch}\PYG{p}{)}
+\end{MintedVerbatim}
